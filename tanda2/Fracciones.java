@@ -4,6 +4,8 @@ import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -70,45 +72,76 @@ public class Fracciones extends Application {
 
   public void calcular() {
 
-      if (suma.isSelected()) {
-        sumarFracciones();
-      } else if (resta.isSelected()) {
-        restarFracciones();  
-      } else if (producto.isSelected()) {
-        multiplicarFracciones();
-      } else if (division.isSelected()) {
-        dividirFracciones();
-      }
+    if (suma.isSelected()) {
+      sumarFracciones();
+    } else if (resta.isSelected()) {
+      restarFracciones();  
+    } else if (producto.isSelected()) {
+      multiplicarFracciones();
+    } else if (division.isSelected()) {
+      dividirFracciones();
+    }
   }
-  
+
   private void dividirFracciones() {
-    numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText())));
-    denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(numerador2.getText())));
+    if (denominadorIncorrecto()) {
+      alerta();
+    }else {
+      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText())));
+      denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(numerador2.getText())));
+    }
   }
 
   private void multiplicarFracciones() {
-    numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(numerador2.getText())));
-    denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+    if (denominadorIncorrecto()) {
+      alerta();
+    }else {
+      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(numerador2.getText())));
+      denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+    }
   }
 
   private void restarFracciones() {
-    if(denominador1.getText().equals(denominador2.getText())) {
-      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) - Integer.parseInt(numerador2.getText())));
-      denominadorResultado.setText(denominador1.getText());
-    }else {
-      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText()) - (Integer.parseInt(numerador2.getText()) * Integer.parseInt(denominador1.getText()))));
-      denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+    if (denominadorIncorrecto()) {
+      alerta();
+    } else {
+      if(denominador1.getText().equals(denominador2.getText())) {
+        numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) - Integer.parseInt(numerador2.getText())));
+        denominadorResultado.setText(denominador1.getText());
+      }else {
+        numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText()) - (Integer.parseInt(numerador2.getText()) * Integer.parseInt(denominador1.getText()))));
+        denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+      }
     }
   }
 
   public void sumarFracciones(){
-    if(denominador1.getText().equals(denominador2.getText())) {
-      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) + Integer.parseInt(numerador2.getText())));
-      denominadorResultado.setText(denominador1.getText());
-    }else {
-      numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText()) + (Integer.parseInt(numerador2.getText()) * Integer.parseInt(denominador1.getText()))));
-      denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+    if (denominadorIncorrecto()) {
+      alerta();
+    } else {
+      if(denominador1.getText().equals(denominador2.getText())) {
+        numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) + Integer.parseInt(numerador2.getText())));
+        denominadorResultado.setText(denominador1.getText());
+      }else {
+        numeradorResultado.setText(Integer.toString(Integer.parseInt(numerador1.getText()) * Integer.parseInt(denominador2.getText()) + (Integer.parseInt(numerador2.getText()) * Integer.parseInt(denominador1.getText()))));
+        denominadorResultado.setText(Integer.toString(Integer.parseInt(denominador1.getText()) * Integer.parseInt(denominador2.getText())));
+      }
     }
+  }
+
+  public boolean denominadorIncorrecto() {
+    if(denominador1.getText().equals("0") || denominador2.getText().equals("0")) {
+      return true;
+    }else {
+      return false;
+    }
+  }
+  public void alerta() {
+    Alert alert = new Alert(AlertType.ERROR);
+    alert.setTitle("Error Dialog");
+    alert.setHeaderText("Look, an Error Dialog");
+    alert.setContentText("El denominador de una fracción no puede ser 0");
+    alert.showAndWait();
   }
 
   public static void main(String[] args) {
