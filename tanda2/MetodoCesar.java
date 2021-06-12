@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -36,12 +37,13 @@ public class MetodoCesar extends Application {
   Button boton5;
   Slider slide;
   List<String> ficheroLeido = new ArrayList<>();
+  List <String> ficheroFinal = new ArrayList<String>();
 
   @Override
   public void init() {
     boton1 = new Button("<");
     boton2 = new Button(">");
-    boton4 = new Button("Guarda fichero");
+    boton4 = new Button("Guardar fichero");
     boton5 = new Button("Desencriptar");
     textfield = new TextField();
 
@@ -104,6 +106,8 @@ public class MetodoCesar extends Application {
 
     HBox hbox4 = new HBox(65,boton3,hbox3,boton4);
     hbox4.setAlignment(Pos.CENTER);
+    
+    boton4.setOnAction(ActionEvent -> guardarFichero(primaryStage));
 
     boton5.setOnAction(ActionEvent -> desencriptar());
 
@@ -114,7 +118,31 @@ public class MetodoCesar extends Application {
     vboxfinal.setPadding(new Insets(40));
     return vboxfinal;
   }
+  
+  private void escribirFichero() {
+    ficheroFinal.add(textarea2.getText());
+  }
+  
+  private void guardarFichero(Stage primaryStage) {
+    FileChooser file = new FileChooser();
+    
+    File ficheroprueba = file.showSaveDialog(primaryStage);
+    
+    try {
+      PrintWriter ficheroguardado = new PrintWriter(ficheroprueba);
+      escribirFichero();
+      Iterator<String> iterador = ficheroFinal.iterator();
 
+      while(iterador.hasNext()) {
+        ficheroguardado.write(iterador.next());
+      }
+      ficheroguardado.close();
+      
+    } catch (FileNotFoundException e) {
+      System.out.println("No se ha podido escribir en el fichero");
+    }
+  }
+  
   public void moverSlide(MouseEvent e) {
     slide.valueProperty().addListener((observable, oldValue, newValue) ->  {
       textfield.setText(Integer.toString(observable.getValue().intValue()));
@@ -163,24 +191,22 @@ public class MetodoCesar extends Application {
   }
 
   public static String descifradoCesar(String texto, int codigo) {
-    StringBuilder cifrado = new StringBuilder();
-    codigo = codigo % 26;
-    for (int i = 0; i < texto.length(); i++) {
-      if (texto.charAt(i) >= 'a' && texto.charAt(i) <= 'z') {
-        if ((texto.charAt(i) - codigo) < 'a') {
-          cifrado.append((char) (texto.charAt(i) - codigo + 26));
-        } else {
-          cifrado.append((char) (texto.charAt(i) - codigo));
+    String letras = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZáéíóúüñÁÉÍÓÚÜÑ";
+    String cadenaDesencriptada = "";
+    for (char caracter: texto.toCharArray()) {
+      char caracterDesencriptado = caracter;
+      // si el carácter es alfabético, desencriptamos
+      if (letras.contains(Character.toString(caracter))) {
+        int posicionDondeEsta = letras.indexOf(caracter);
+        int posicionCaracterDesencriptado = ((posicionDondeEsta - codigo) % letras.length());
+        if (posicionCaracterDesencriptado < 0) {
+          posicionCaracterDesencriptado = letras.length() + posicionCaracterDesencriptado;
         }
-      } else if (texto.charAt(i) >= 'A' && texto.charAt(i) <= 'Z') {
-        if ((texto.charAt(i) - codigo) < 'A') {
-          cifrado.append((char) (texto.charAt(i) - codigo + 26));
-        } else {
-          cifrado.append((char) (texto.charAt(i) - codigo));
-        }
-      }
+        caracterDesencriptado = letras.charAt(posicionCaracterDesencriptado);
+      } 
+      cadenaDesencriptada += caracterDesencriptado;
     }
-    return cifrado.toString();
+    return cadenaDesencriptada;
   }
 
   public static void main(String[] args) {
